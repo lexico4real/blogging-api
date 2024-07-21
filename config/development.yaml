@@ -1,0 +1,15 @@
+db:
+  host: 'localhost'
+  username: 'postgres'
+  password: 'postgres'
+  synchronize: true
+  typeOrmSync: true
+
+jwt:
+  secret: 'B[T@_6_-M2ux\^u),<7D9hsu99x.2-}bX_2bUXgnW?#5YT*cn$d{HjvBW^#Jfs]j'
+
+mailer:
+  email: lexico4real@gmail.com
+  server: gmail
+  password: yhfheagqhjhoelkd
+  

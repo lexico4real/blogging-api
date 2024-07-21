@@ -1,0 +1,9 @@
+db:
+  password: 'template_db_password'
+
+jwt:
+  secret: 'template_jwt_secret'
+  expiresIn: 'expiresIn'
+
+mailer:
+  password: 'template_mailer_password'
