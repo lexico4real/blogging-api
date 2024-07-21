@@ -7,7 +7,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as config from 'config';
 import { PrismaService } from '../prisma/prisma.service';
-import { UsersRepository } from './users.repository'; // Import UsersRepository
+import { UsersRepository } from './users.repository';
 
 const jwtConfig = config.get('jwt');
 
@@ -29,8 +29,8 @@ const jwtConfig = config.get('jwt');
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy, PrismaService, UsersRepository], // Add UsersRepository to providers
+  providers: [AuthService, JwtStrategy, PrismaService, UsersRepository],
   controllers: [AuthController],
-  exports: [JwtStrategy, PassportModule, AuthService], // Export necessary modules
+  exports: [JwtStrategy, PassportModule, AuthService],
 })
 export class AuthModule {}
