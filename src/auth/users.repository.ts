@@ -44,7 +44,15 @@ export class UsersRepository {
     return this.prisma.user.findUnique({ where: { username } });
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.prisma.user.findMany();
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        password: false,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 }
