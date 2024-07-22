@@ -24,7 +24,11 @@ const jwtConfig = config.get('jwt');
           configService.get('JWT_SECRET') ||
           jwtConfig['secret'],
         signOptions: {
-          expiresIn: process.env.EXPIRESIN || Number(jwtConfig['expiresIn']),
+          expiresIn:
+            process.env.JWT_EXPIRES_IN ||
+            configService.get('JWT_EXPIRES_IN') ||
+            jwtConfig['expiresIn'] ||
+            '10h',
         },
       }),
     }),
