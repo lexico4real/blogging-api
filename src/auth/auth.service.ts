@@ -38,4 +38,8 @@ export class AuthService {
   async getAllUsers() {
     return this.usersRepository.getAllUsers();
   }
+
+  verifyJwt(token: string) {
+    return this.jwtService.verify(token);
+  }
 }
