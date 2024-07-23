@@ -53,15 +53,50 @@ This is a simple blogging API built with NestJS, Prisma, and PostgreSQL. The API
     ```bash
     npx prisma migrate dev
     ```
-
-### Running the Application
-
 Note that base URL has the suffix of api/v1/. That is:
-
 ```
 {{base_url}}/api/v1/
 ```
 
+### Running the Application
+
+
+I encourage you run the application with docker and ensure you have docker installed on your computer. Before you start dockr, create a .env file and paste all the required variables in it, then start docker and run the commands below.
+
+Note: For the purpose of this project, I have included the environmen variables below, but this is not a good practice.
+
+```
+DATABASE_NAME=blogging_api
+DATABASE_PASSWORD=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USERNAME=postgres
+DATABASE_TYPE=postgres
+HOST=3000
+JWT_EXPIRES_IN=10h
+JWT_SECRET='B[T@_6_-M2ux\^u),<7D9hsu99x.2-}bX_2bUXgnW?#5YT*cn$d{HjvBW^#Jfs]j'
+
+# For docker
+DATABASE_URL="postgresql://postgres:postgres@db:5432/blogging_api"
+
+# Not for docker
+# DATABASE_URL="postgresql://postgres:postgres@localhost:5432/blogging_api?schema=public"
+
+```
+
+## With Docker
+
+1. **Build the application**:
+    ```bash
+    docker-compose build
+    ```
+
+2. **start the application**:
+    ```bash
+    docker-compose up
+    ```
+
+## Without Docker
 
 1. **Start the application**:
     ```bash
@@ -236,10 +271,15 @@ src/
 ├── prisma/
 │ └── prisma.service.ts
 │
+├── Dockerfile
+├── docker-compose.yml
+|
 ├── users/
 │ ├── users.controller.ts
 │ ├── users.module.ts
 │ └── users.service.ts
+|
+├── entrypoint.sh
 │
 ├── app.module.ts
 └── main.ts
