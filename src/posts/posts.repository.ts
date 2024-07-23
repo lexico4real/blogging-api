@@ -8,6 +8,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Post } from '@prisma/client';
 import { CreatePostDto } from './dto/create-post.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsRepository {
@@ -27,6 +28,7 @@ export class PostsRepository {
         },
       });
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Failed to create post');
     }
   }
@@ -55,5 +57,13 @@ export class PostsRepository {
       }
       throw new InternalServerErrorException('Failed to retrieve post');
     }
+  }
+
+  async updatePost(id: string, pdatePostDto: UpdatePostDto) {
+    await this.findPostById(id);
+    return await this.prisma.post.update({
+      where: { id },
+      data: pdatePostDto,
+    });
   }
 }

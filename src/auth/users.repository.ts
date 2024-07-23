@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
+import { Role } from 'common/roles.enum';
 
 @Injectable()
 export class UsersRepository {
@@ -20,12 +21,16 @@ export class UsersRepository {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const defaultRoles = [Role.User];
+    const roles = authCredentialsDto.roles || defaultRoles;
+
     try {
       await this.prisma.user.create({
         data: {
           id: uuidv4(),
           username,
           password: hashedPassword,
+          roles,
         },
       });
     } catch (error) {

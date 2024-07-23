@@ -1,4 +1,11 @@
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class AuthCredentialsDto {
   @IsString()
@@ -13,4 +20,9 @@ export class AuthCredentialsDto {
     message: 'password is too weak',
   })
   password: string;
+
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  roles?: string[];
 }
