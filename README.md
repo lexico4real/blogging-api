@@ -1,55 +1,270 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Blogging API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This is a simple blogging API built with NestJS, Prisma, and PostgreSQL. The API allows users to register, log in, and create, read, update, and delete blog posts. The application uses JWT authentication to secure endpoints. Additionally, users can comment on posts.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **User Registration and Authentication**: Users can register and log in using a username and password.
+- **JWT Authentication**: Secure endpoints with JWT tokens.
+- **CRUD Operations for Posts**: Create, read, update, and delete blog posts.
+- **User Authorization**: Ensure that only the author can edit or delete their posts.
+- **Comments on Posts**: Users can add, view, and delete comments on posts.
 
-## Installation
+## Technologies
 
-```bash
-$ npm install
+- **NestJS**: A progressive Node.js framework for building efficient and scalable server-side applications.
+- **Prisma**: A next-generation ORM for Node.js and TypeScript.
+- **PostgreSQL**: A powerful, open-source relational database system.
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** (version 12 or later)
+- **npm** (version 6 or later) or **yarn**
+- **PostgreSQL** (version 9.6 or later)
+
+### Installation
+
+1. **Clone the repository**:
+    ```bash
+    git clone <YOUR_GITHUB_REPO_URL>
+    cd blogging-api
+    ```
+
+2. **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+3. **Set up environment variables**:
+    Create a `.env` file in the root directory and add the following:
+    ```env
+    DATABASE_URL=postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DATABASE>?schema=public
+    JWT_SECRET=your_jwt_secret
+    ```
+
+4. **Set up the database**:
+    Make sure your PostgreSQL server is running and create a new database.
+
+5. **Run database migrations**:
+    ```bash
+    npx prisma migrate dev
+    ```
+
+### Running the Application
+
+1. **Start the application**:
+    ```bash
+    npm run start
+    ```
+
+2. **Development mode**:
+    ```bash
+    npm run start:dev
+    ```
+
+3. **Production mode**:
+    ```bash
+    npm run start:prod
+    ```
+
+### API Endpoints
+
+#### Authentication
+
+- **POST /auth/register**
+    - Registers a new user.
+    - Request body:
+        ```json
+        {
+          "username": "string",
+          "password": "string"
+        }
+        ```
+
+- **POST /auth/login**
+    - Logs in a user and returns a JWT token.
+    - Request body:
+        ```json
+        {
+          "username": "string",
+          "password": "string"
+        }
+        ```
+
+#### Users
+
+- **GET /users**
+    - Retrieves all users.
+
+#### Posts
+
+- **GET /posts**
+    - Retrieves all posts.
+
+- **GET /posts/:id**
+    - Retrieves a specific post by ID.
+
+- **POST /posts**
+    - Creates a new post (requires JWT).
+    - Request body:
+        ```json
+        {
+          "title": "string",
+          "content": "string"
+        }
+        ```
+
+- **PATCH /posts/:id**
+    - Updates an existing post (requires JWT, only the author can update their post).
+    - Request body:
+        ```json
+        {
+          "title": "string",
+          "content": "string"
+        }
+        ```
+
+- **DELETE /posts/:id**
+    - Deletes an existing post (requires JWT, only the author can delete their post).
+
+#### Comments
+
+- **POST /comments**
+    - Creates a new comment (requires JWT).
+    - Request body:
+        ```json
+        {
+          "content": "string",
+          "postId": "string"
+        }
+        ```
+    - Example response:
+        ```json
+        {
+          "id": "string",
+          "content": "string",
+          "postId": "string",
+          "authorId": "string",
+          "createdAt": "string",
+          "updatedAt": "string"
+        }
+        ```
+
+- **GET /comments/:id**
+    - Retrieves a specific comment by ID.
+    - Example response:
+        ```json
+        {
+          "id": "string",
+          "content": "string",
+          "postId": "string",
+          "authorId": "string",
+          "createdAt": "string",
+          "updatedAt": "string"
+        }
+        ```
+
+- **GET /comments/post/:postId**
+    - Retrieves all comments for a specific post.
+    - Example response:
+        ```json
+        [
+          {
+            "id": "string",
+            "content": "string",
+            "postId": "string",
+            "authorId": "string",
+            "createdAt": "string",
+            "updatedAt": "string"
+          }
+        ]
+        ```
+
+- **DELETE /comments/:id**
+    - Deletes an existing comment (requires JWT, only admins can delete comments).
+    - Example response:
+        ```json
+        {
+          "id": "string",
+          "content": "string",
+          "postId": "string",
+          "authorId": "string",
+          "createdAt": "string",
+          "updatedAt": "string"
+        }
+        ```
+
+### Project Structure
 ```
 
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+src/
+│
+├── auth/
+│ ├── auth.controller.ts
+│ ├── auth.module.ts
+│ ├── auth.service.ts
+│ ├── jwt-auth.guard.ts
+│ ├── jwt.strategy.ts
+│ └── get-user.decorator.ts
+│
+├── comments/
+│ ├── comments.controller.ts
+│ ├── comments.module.ts
+│ ├── comments.service.ts
+│ ├── comments.repository.ts
+│ └── dto/
+│ ├── create-comment.dto.ts
+│ └── comment.dto.ts
+│
+├── posts/
+│ ├── posts.controller.ts
+│ ├── posts.module.ts
+│ ├── posts.service.ts
+│ └── posts.repository.ts
+│
+├── prisma/
+│ └── prisma.service.ts
+│
+├── users/
+│ ├── users.controller.ts
+│ ├── users.module.ts
+│ └── users.service.ts
+│
+├── app.module.ts
+└── main.ts
 ```
 
-## Test
 
-You can test this using using [postman] (https://www.postman.com)
-You can also use swegger to test: (http://localhost:3000/api/)
+### Security
 
-## Support
+- **Password Hashing**: Ensure that user passwords are hashed before storing them in the database.
+- **JWT Authentication**: Secure API endpoints with JWT tokens to ensure only authenticated users can access protected routes.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Testing
+
+- **Unit tests**:
+    ```bash
+    npm run test
+    ```
+
+- **End-to-end tests**:
+    ```bash
+    npm run test:e2e
+    ```
+
+- **Test coverage**:
+    ```bash
+    npm run test:cov
+    ```
+
+### Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any changes.
+
+### License
+
+This project is licensed under the MIT License.
