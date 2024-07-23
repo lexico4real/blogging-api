@@ -30,7 +30,7 @@ This is a simple blogging API built with NestJS, Prisma, and PostgreSQL. The API
 
 1. **Clone the repository**:
     ```bash
-    git clone <YOUR_GITHUB_REPO_URL>
+    git clone https://github.com/lexico4real/blogging-api
     cd blogging-api
     ```
 
@@ -55,6 +55,13 @@ This is a simple blogging API built with NestJS, Prisma, and PostgreSQL. The API
     ```
 
 ### Running the Application
+
+Note that base URL has the suffix of api/v1/. That is:
+
+```
+{{base_url}}/api/v1/
+```
+
 
 1. **Start the application**:
     ```bash
