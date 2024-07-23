@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { Post } from '@prisma/client';
+import { Post, Prisma } from '@prisma/client';
 import { CreatePostDto } from './dto/create-post.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -32,9 +32,54 @@ export class PostsRepository {
     }
   }
 
-  async findAllPosts(): Promise<Post[]> {
+  async findAllPosts(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.PostWhereUniqueInput;
+    where?: Prisma.PostWhereInput;
+    orderBy?: Prisma.PostOrderByWithRelationInput;
+  }): Promise<{
+    posts: Post[];
+    pagination: {
+      totalItems: number;
+      totalPages: number;
+      currentPage: number;
+      itemsPerPage: number;
+      nextPage: number | null;
+      prevPage: number | null;
+    };
+  }> {
     try {
-      return await this.prisma.post.findMany();
+      const { skip, take, cursor, where, orderBy } = params;
+
+      const posts = await this.prisma.post.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+      });
+
+      const totalCount = await this.prisma.post.count({
+        where,
+      });
+
+      const totalPages = Math.ceil(totalCount / take);
+      const currentPage = Math.floor(skip / take) + 1;
+      const nextPage = skip + take < totalCount ? currentPage + 1 : null;
+      const prevPage = skip > 0 ? currentPage - 1 : null;
+
+      return {
+        posts,
+        pagination: {
+          totalItems: totalCount,
+          totalPages,
+          currentPage,
+          itemsPerPage: take,
+          nextPage,
+          prevPage,
+        },
+      };
     } catch (error) {
       throw new InternalServerErrorException('Failed to retrieve posts');
     }

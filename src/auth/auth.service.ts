@@ -4,6 +4,7 @@ import { UsersRepository } from './users.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -40,8 +41,14 @@ export class AuthService {
     return this.usersRepository.findOneByUsername(username);
   }
 
-  async getAllUsers() {
-    return this.usersRepository.getAllUsers();
+  async getAllUsers(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+  }) {
+    return this.usersRepository.getAllUsers(params);
   }
 
   verifyJwt(token: string) {

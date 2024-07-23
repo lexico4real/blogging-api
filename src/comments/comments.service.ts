@@ -1,6 +1,7 @@
 import { CommentsRepository } from './comments.repository';
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CommentsService {
@@ -10,8 +11,15 @@ export class CommentsService {
     return await this.commentsRepository.createComment(createCommentDto);
   }
 
-  async getCommentsByPost(postId: string) {
-    return await this.commentsRepository.getCommentsByPost(postId);
+  async getCommentsByPost(params: {
+    postId: string;
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.CommentWhereUniqueInput;
+    where?: Prisma.CommentWhereInput;
+    orderBy?: Prisma.CommentOrderByWithRelationInput;
+  }) {
+    return this.commentsRepository.getCommentsByPost(params);
   }
 
   async deleteComment(commentId: string) {

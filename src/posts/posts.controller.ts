@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -32,8 +33,15 @@ export class PostsController {
   }
 
   @Get()
-  findAllPosts() {
-    return this.postsService.findAllPosts();
+  findAllPosts(@Query() query: any) {
+    const { skip, take, cursor, where, orderBy } = query;
+    return this.postsService.findAllPosts({
+      skip: Number(skip) || 0,
+      take: Number(take) || 10,
+      cursor: cursor ? JSON.parse(cursor) : undefined,
+      where: where ? JSON.parse(where) : undefined,
+      orderBy: orderBy ? JSON.parse(orderBy) : undefined,
+    });
   }
 
   @Get(':id')

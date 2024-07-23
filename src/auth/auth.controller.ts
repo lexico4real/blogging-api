@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
@@ -24,7 +24,14 @@ export class AuthController {
   @Get('/users')
   @UseGuards(AuthGuard())
   @Roles(Role.Super_Admin, Role.Admin)
-  getAllUsers(): Promise<any> {
-    return this.authService.getAllUsers();
+  async getAllUsers(@Query() query: any) {
+    const { skip, take, cursor, where, orderBy } = query;
+    return this.authService.getAllUsers({
+      skip: Number(skip) || 0,
+      take: Number(take) || 10,
+      cursor: cursor ? JSON.parse(cursor) : undefined,
+      where: where ? JSON.parse(where) : undefined,
+      orderBy: orderBy ? JSON.parse(orderBy) : undefined,
+    });
   }
 }

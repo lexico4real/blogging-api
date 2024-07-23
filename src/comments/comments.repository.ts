@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { Comment } from '@prisma/client';
+import { Comment, Prisma } from '@prisma/client';
 import { CommentDto, CreateCommentDto } from './dto/create-comment.dto';
 
 @Injectable()
@@ -27,12 +27,59 @@ export class CommentsRepository {
     }
   }
 
-  async getCommentsByPost(postId: string): Promise<CommentDto[]> {
-    const comments: Comment[] = await this.prisma.comment.findMany({
-      where: { postId },
-      include: { author: true },
-    });
-    return comments.map(this.toCommentDto);
+  async getCommentsByPost(params: {
+    postId: string;
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.CommentWhereUniqueInput;
+    where?: Prisma.CommentWhereInput;
+    orderBy?: Prisma.CommentOrderByWithRelationInput;
+  }): Promise<{
+    comments: CommentDto[];
+    pagination: {
+      totalItems: number;
+      totalPages: number;
+      currentPage: number;
+      itemsPerPage: number;
+      nextPage: number | null;
+      prevPage: number | null;
+    };
+  }> {
+    try {
+      const { postId, skip, take, cursor, where, orderBy } = params;
+
+      const comments = await this.prisma.comment.findMany({
+        where: { postId, ...where },
+        skip,
+        take,
+        cursor,
+        orderBy,
+        include: { author: true },
+      });
+
+      const totalCount = await this.prisma.comment.count({
+        where: { postId, ...where },
+      });
+
+      const totalPages = Math.ceil(totalCount / take);
+      const currentPage = Math.floor(skip / take) + 1;
+      const nextPage = skip + take < totalCount ? currentPage + 1 : null;
+      const prevPage = skip > 0 ? currentPage - 1 : null;
+
+      return {
+        comments: comments.map(this.toCommentDto),
+        pagination: {
+          totalItems: totalCount,
+          totalPages,
+          currentPage,
+          itemsPerPage: take,
+          nextPage,
+          prevPage,
+        },
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to retrieve comments');
+    }
   }
 
   async deleteComment(commentId: string): Promise<CommentDto> {
