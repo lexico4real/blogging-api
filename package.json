@@ -37,6 +37,7 @@
     "config": "^3.3.12",
     "eslint": "^9.7.0",
     "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
     "log4js": "^6.9.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

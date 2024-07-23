@@ -23,8 +23,14 @@ export class AuthService {
     const user = await this.usersRepository.findOneByUsername(username);
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { username };
-      const accessToken: string = await this.jwtService.sign(payload);
+      const payload: JwtPayload = { id: user.id, username };
+      const accessToken: string = await this.jwtService.sign(payload, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      });
+
+      const decodedToken = this.jwtService.decode(accessToken) as any;
+      console.log('Decoded JWT:', decodedToken);
+
       return { accessToken };
     } else {
       throw new UnauthorizedException('Please check your login credentials');
