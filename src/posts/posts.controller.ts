@@ -6,25 +6,25 @@ import {
   Patch,
   Param,
   Delete,
-  Request,
   UseGuards,
   UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/auth/roles.decorator';
+import { Roles } from '../auth/roles.decorator';
 import { Role } from 'common/roles.enum';
-import { GetUser } from 'src/auth/get-user.decorator';
+import { GetUser } from '../auth/get-user.decorator';
 import { User } from '@prisma/client';
 
 @Controller('posts')
-@UseGuards(AuthGuard())
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @UseGuards(AuthGuard())
   createPost(@Body() createPostDto: CreatePostDto, @GetUser() user: User) {
     return this.postsService.createPost({
       ...createPostDto,
@@ -33,8 +33,15 @@ export class PostsController {
   }
 
   @Get()
-  findAllPosts() {
-    return this.postsService.findAllPosts();
+  findAllPosts(@Query() query: any) {
+    const { skip, take, cursor, where, orderBy } = query;
+    return this.postsService.findAllPosts({
+      skip: Number(skip) || 0,
+      take: Number(take) || 10,
+      cursor: cursor ? JSON.parse(cursor) : undefined,
+      where: where ? JSON.parse(where) : undefined,
+      orderBy: orderBy ? JSON.parse(orderBy) : undefined,
+    });
   }
 
   @Get(':id')
@@ -43,6 +50,7 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard())
   async updatePost(
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
@@ -57,7 +65,7 @@ export class PostsController {
 
   @Roles(Role.Super_Admin, Role.Admin)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  deletePost(@Param('postId') postId: string) {
+    return this.postsService.deletePost(postId);
   }
 }

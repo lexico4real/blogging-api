@@ -4,7 +4,7 @@ import { PostsController } from './posts.controller';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PostsRepository } from './posts.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PassportModule.register({ defaultStrategy: 'jwt' }), PrismaModule],

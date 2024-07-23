@@ -18,10 +18,8 @@ export const GetUser = createParamDecorator(
     let decodedToken: { username: string };
     try {
       decodedToken = verifyToken(token);
-      console.log({ decodedToken });
       req.user = decodedToken;
     } catch (error) {
-      console.log(error);
       throw new BadRequestException('Invalid or expired token');
     }
     return req.user;

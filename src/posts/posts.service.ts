@@ -2,6 +2,7 @@ import { PostsRepository } from './posts.repository';
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -10,8 +11,14 @@ export class PostsService {
     return await this.postsRepository.createPost(createPostDto);
   }
 
-  async findAllPosts() {
-    return await this.postsRepository.findAllPosts();
+  async findAllPosts(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.PostWhereUniqueInput;
+    where?: Prisma.PostWhereInput;
+    orderBy?: Prisma.PostOrderByWithRelationInput;
+  }) {
+    return this.postsRepository.findAllPosts(params);
   }
 
   async findPostById(id: string) {
@@ -22,7 +29,7 @@ export class PostsService {
     return await this.postsRepository.updatePost(id, updatePostDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async deletePost(postId: string): Promise<void> {
+    await this.postsRepository.deletePost(postId);
   }
 }

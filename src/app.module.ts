@@ -9,6 +9,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { PostsModule } from './posts/posts.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RolesGuard } from './auth/roles.guard';
     AuthModule,
     PrismaModule,
     PostsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [

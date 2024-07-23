@@ -4,6 +4,7 @@ import { UsersRepository } from './users.repository';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -18,20 +19,19 @@ export class AuthService {
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; decodedToken: any }> {
     const { username, password } = authCredentialsDto;
     const user = await this.usersRepository.findOneByUsername(username);
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { id: user.id, username };
+      const payload: JwtPayload = { id: user.id, username, roles: user.roles };
       const accessToken: string = await this.jwtService.sign(payload, {
         expiresIn: process.env.JWT_EXPIRES_IN,
       });
 
       const decodedToken = this.jwtService.decode(accessToken) as any;
-      console.log('Decoded JWT:', decodedToken);
 
-      return { accessToken };
+      return { accessToken, decodedToken };
     } else {
       throw new UnauthorizedException('Please check your login credentials');
     }
@@ -41,8 +41,14 @@ export class AuthService {
     return this.usersRepository.findOneByUsername(username);
   }
 
-  async getAllUsers() {
-    return this.usersRepository.getAllUsers();
+  async getAllUsers(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+  }) {
+    return this.usersRepository.getAllUsers(params);
   }
 
   verifyJwt(token: string) {
