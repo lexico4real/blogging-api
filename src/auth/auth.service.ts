@@ -18,20 +18,19 @@ export class AuthService {
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; decodedToken: any }> {
     const { username, password } = authCredentialsDto;
     const user = await this.usersRepository.findOneByUsername(username);
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { id: user.id, username };
+      const payload: JwtPayload = { id: user.id, username, roles: user.roles };
       const accessToken: string = await this.jwtService.sign(payload, {
         expiresIn: process.env.JWT_EXPIRES_IN,
       });
 
       const decodedToken = this.jwtService.decode(accessToken) as any;
-      console.log('Decoded JWT:', decodedToken);
 
-      return { accessToken };
+      return { accessToken, decodedToken };
     } else {
       throw new UnauthorizedException('Please check your login credentials');
     }

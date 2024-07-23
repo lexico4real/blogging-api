@@ -22,7 +22,7 @@ export class PostsService {
     return await this.postsRepository.updatePost(id, updatePostDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async deletePost(postId: string): Promise<void> {
+    await this.postsRepository.deletePost(postId);
   }
 }

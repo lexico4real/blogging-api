@@ -7,7 +7,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Comment } from '@prisma/client';
 import { CommentDto, CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentsRepository {
@@ -37,10 +36,15 @@ export class CommentsRepository {
   }
 
   async deleteComment(commentId: string): Promise<CommentDto> {
-    const comment: Comment = await this.prisma.comment.delete({
-      where: { id: commentId },
-    });
-    return this.toCommentDto(comment);
+    await this.findCommentById(commentId);
+    try {
+      const comment: Comment = await this.prisma.comment.delete({
+        where: { id: commentId },
+      });
+      return this.toCommentDto(comment);
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findCommentById(id: string): Promise<Comment> {
@@ -51,10 +55,7 @@ export class CommentsRepository {
       }
       return comment;
     } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
+      if (error?.message === `Comment with ID "${id}" not found`) {
         throw new NotFoundException(`Comment with ID "${id}" not found`);
       }
       throw new InternalServerErrorException('Failed to retrieve comment');

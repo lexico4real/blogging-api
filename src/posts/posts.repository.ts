@@ -48,21 +48,29 @@ export class PostsRepository {
       }
       return post;
     } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
+      if (error?.message === '`Post with ID "${id}" not found`') {
         throw new NotFoundException(`Post with ID "${id}" not found`);
       }
       throw new InternalServerErrorException('Failed to retrieve post');
     }
   }
 
-  async updatePost(id: string, pdatePostDto: UpdatePostDto) {
+  async updatePost(id: string, updatePostDto: UpdatePostDto) {
     await this.findPostById(id);
     return await this.prisma.post.update({
       where: { id },
-      data: pdatePostDto,
+      data: updatePostDto,
     });
+  }
+
+  async deletePost(postId: string): Promise<void> {
+    await this.findPostById(postId);
+    try {
+      await this.prisma.post.delete({
+        where: { id: postId },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 }
