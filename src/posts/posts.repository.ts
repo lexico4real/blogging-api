@@ -9,9 +9,11 @@ import { Post, Prisma } from '@prisma/client';
 import { CreatePostDto } from './dto/create-post.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePostDto } from './dto/update-post.dto';
+import Logger from 'config/log4js/logger';
 
 @Injectable()
 export class PostsRepository {
+  logger: Logger = new Logger();
   constructor(private readonly prisma: PrismaService) {}
 
   async createPost(createPostDto: CreatePostDto): Promise<Post> {
@@ -28,6 +30,7 @@ export class PostsRepository {
         },
       });
     } catch (error) {
+      this.logger.log('info', 'info', error, 'create-post');
       throw new InternalServerErrorException('Failed to create post');
     }
   }
@@ -81,6 +84,7 @@ export class PostsRepository {
         },
       };
     } catch (error) {
+      this.logger.log('info', 'info', error, 'fetch-post');
       throw new InternalServerErrorException('Failed to retrieve posts');
     }
   }
@@ -93,6 +97,7 @@ export class PostsRepository {
       }
       return post;
     } catch (error) {
+      this.logger.log('info', 'info', error, 'fetch-post-by-id');
       if (error?.message === '`Post with ID "${id}" not found`') {
         throw new NotFoundException(`Post with ID "${id}" not found`);
       }
@@ -115,6 +120,7 @@ export class PostsRepository {
         where: { id: postId },
       });
     } catch (error) {
+      this.logger.log('info', 'info', error, 'delete-post');
       throw error;
     }
   }

@@ -7,9 +7,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Comment, Prisma } from '@prisma/client';
 import { CommentDto, CreateCommentDto } from './dto/create-comment.dto';
+import Logger from 'config/log4js/logger';
 
 @Injectable()
 export class CommentsRepository {
+  logger: Logger = new Logger();
   constructor(private readonly prisma: PrismaService) {}
 
   async createComment(createCommentDto: CreateCommentDto): Promise<Comment> {
@@ -23,6 +25,7 @@ export class CommentsRepository {
         },
       });
     } catch (error) {
+      this.logger.log('info', 'info', error, 'create-comment');
       throw new InternalServerErrorException('Failed to create comment');
     }
   }
@@ -78,6 +81,7 @@ export class CommentsRepository {
         },
       };
     } catch (error) {
+      this.logger.log('info', 'info', error, 'fetch-comment-by-post');
       throw new InternalServerErrorException('Failed to retrieve comments');
     }
   }
@@ -90,6 +94,7 @@ export class CommentsRepository {
       });
       return this.toCommentDto(comment);
     } catch (error) {
+      this.logger.log('info', 'info', error, 'delete-comment');
       throw error;
     }
   }
@@ -102,6 +107,7 @@ export class CommentsRepository {
       }
       return comment;
     } catch (error) {
+      this.logger.log('info', 'info', error, 'fetch-comment-by-id');
       if (error?.message === `Comment with ID "${id}" not found`) {
         throw new NotFoundException(`Comment with ID "${id}" not found`);
       }

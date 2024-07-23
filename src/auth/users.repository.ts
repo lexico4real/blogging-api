@@ -10,9 +10,11 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { v4 as uuidv4 } from 'uuid';
 import { Prisma, User } from '@prisma/client';
 import { Role } from 'common/roles.enum';
+import Logger from 'config/log4js/logger';
 
 @Injectable()
 export class UsersRepository {
+  logger: Logger = new Logger();
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(authCredentialsDto: AuthCredentialsDto): Promise<void> {
@@ -34,6 +36,12 @@ export class UsersRepository {
         },
       });
     } catch (error) {
+      this.logger.log(
+        'info',
+        'info',
+        error,
+        'create-user',
+      );
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2002'
@@ -106,6 +114,7 @@ export class UsersRepository {
         },
       };
     } catch (error) {
+      this.logger.log('info', 'info', error, 'fetch-users');
       throw new InternalServerErrorException('Failed to retrieve users');
     }
   }
